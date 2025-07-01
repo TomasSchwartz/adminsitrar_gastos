@@ -31,9 +31,19 @@ router.post('/', auth, async (req, res) => {
 
 // Editar gasto
 router.put('/:id', auth, async (req, res) => {
-    const updated = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
+    try {
+        const updated = await Expense.findOneAndUpdate(
+            { _id: req.params.id, user: req.userId },
+            req.body,
+            { new: true }
+        );
+        if (!updated) return res.status(404).json({ error: 'Gasto no encontrado' });
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al actualizar gasto' });
+    }
 });
+
 
 // Eliminar gasto
 router.delete('/:id', auth, async (req, res) => {

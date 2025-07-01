@@ -13,3 +13,6 @@ API.interceptors.request.use((config) => {
 export const getExpenses = (params) => API.get('/expenses', { params });
 export const createExpense = (data) => API.post('/expenses', data);
 export const deleteExpense = (id) => API.delete(`/expenses/${id}`);
+export const updateExpense = (id, data) => API.put(`/expenses/${id}`, data);
+export const getBudget = (month) => API.get(`/budget/${month}`);
+export const setBudget = (month, amount) => API.put(`/budget/${month}`, { amount });

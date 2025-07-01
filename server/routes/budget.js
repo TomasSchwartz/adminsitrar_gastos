@@ -1,35 +1,30 @@
 const express = require('express');
-const Budget = require('../models/MonthlyBudget');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
+const MonthlyBudget = require('../models/MonthlyBudget');
+const authMiddleware = require('../middlewares/auth');
 
-// Middleware
-function auth(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.sendStatus(401);
+// GET presupuesto para el mes actual
+router.get('/:month', authMiddleware, async (req, res) => {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.userId = decoded.id;
-        next();
+        const budget = await MonthlyBudget.findOne({ user: req.userId, month: req.params.month });
+        res.json(budget || { amount: 0 });
     } catch (err) {
-        res.sendStatus(403);
+        res.status(500).json({ error: 'Error al obtener presupuesto' });
     }
-}
-
-// Guardar o actualizar presupuesto mensual
-router.post('/', auth, async (req, res) => {
-    const { month, amount } = req.body;
-    const filter = { user: req.userId, month };
-    const update = { amount };
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-    const result = await Budget.findOneAndUpdate(filter, update, options);
-    res.json(result);
 });
 
-// Obtener presupuesto de un mes
-router.get('/:month', auth, async (req, res) => {
-    const budget = await Budget.findOne({ user: req.userId, month: req.params.month });
-    res.json(budget || {});
+// POST o PUT presupuesto
+router.put('/:month', authMiddleware, async (req, res) => {
+    try {
+        const updated = await MonthlyBudget.findOneAndUpdate(
+            { user: req.userId, month: req.params.month },
+            { amount: req.body.amount },
+            { new: true, upsert: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al guardar presupuesto' });
+    }
 });
 
 module.exports = router;
