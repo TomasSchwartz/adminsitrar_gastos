@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 
-export default function KpiPanel({ expenses }) {
+export default function KpiPanel({ expenses = [] }) {
     const kpis = useMemo(() => {
-        if (!expenses.length) return null;
+        if (!expenses || expenses.length === 0) return null;
 
         const total = expenses.reduce((acc, e) => acc + e.amount, 0);
         const promedio = total / expenses.length;

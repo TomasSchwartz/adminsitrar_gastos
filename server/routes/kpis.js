@@ -6,7 +6,7 @@ const Expense = require('../models/Expense');
 const SavedAhorro = require('../models/SavedAhorro');
 
 router.get('/:month', auth, async (req, res) => {
-    const { month } = req.params; // "2025-07"
+    const { month } = req.params; // formato: 2025-07
     try {
         const start = new Date(`${month}-01`);
         const end = new Date(`${month}-31`);
@@ -25,15 +25,20 @@ router.get('/:month', auth, async (req, res) => {
         const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
         const netBalance = totalIncome - totalExpenses;
 
-        // Guardar ahorro automático si no existe
-        const existing = await SavedAhorro.findOne({ user: req.userId, month });
-        if (!existing) {
-            const ahorro = new SavedAhorro({
-                user: req.userId,
-                month,
-                amount: netBalance
-            });
-            await ahorro.save();
+        // 🧠 Solo guardar ahorro si el mes ya terminó
+        const today = new Date();
+        const currentMonth = today.toISOString().slice(0, 7);
+
+        if (month < currentMonth) {
+            const existing = await SavedAhorro.findOne({ user: req.userId, month });
+            if (!existing) {
+                const ahorro = new SavedAhorro({
+                    user: req.userId,
+                    month,
+                    amount: netBalance
+                });
+                await ahorro.save();
+            }
         }
 
         res.json({ totalIncome, totalExpenses, netBalance });

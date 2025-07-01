@@ -21,8 +21,9 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/budget', budgetRoutes);
-app.use('/api/incomes', require('./routes/incomes'));
+app.use('/api/income', require('./routes/income'));
 app.use('/api/kpis', require('./routes/kpis'));
+app.use('/api/savings', require('./routes/savings'));
 
 
 // Conexión a MongoDB
