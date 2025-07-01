@@ -1,0 +1,4 @@
+// package.json
+"scripts": {
+"dev": "nodemon server.js"
+}
