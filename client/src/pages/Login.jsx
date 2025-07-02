@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import {ThemeContext} from '../context/ThemeContext';
@@ -109,10 +109,10 @@ export default function Login() {
                                 </svg>
                             </div>
                             <h1 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                Financial Dashboard
+                                FinTrack
                             </h1>
                             <p className={`mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Sign in to access your expense management system
+                                Inicia sesión para acceder a tu sistema de gastos
                             </p>
                         </div>
 
@@ -136,7 +136,7 @@ export default function Login() {
                                 <label htmlFor="email" className={`block text-sm font-medium mb-2 ${
                                     dark ? 'text-gray-300' : 'text-gray-700'
                                 }`}>
-                                    Email Address
+                                    Email
                                 </label>
                                 <div className="relative">
                                     <div
@@ -159,7 +159,7 @@ export default function Login() {
                                                 ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-400'
                                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                                         }`}
-                                        placeholder="Enter your email"
+                                        placeholder="Ingrese su email"
                                     />
                                 </div>
                             </div>
@@ -191,7 +191,7 @@ export default function Login() {
                                                 ? 'bg-slate-800 border-slate-700 text-white placeholder-gray-400'
                                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                                         }`}
-                                        placeholder="Enter your password"
+                                        placeholder="Ingrese su contraseña"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 handleSubmit(e);
@@ -212,7 +212,7 @@ export default function Login() {
                                             : 'text-blue-600 hover:text-blue-500'
                                     }`}
                                 >
-                                    Forgot your password?
+                                    ¿Olvidó su contraseña?
                                 </button>
                             </div>
 
@@ -238,7 +238,7 @@ export default function Login() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                   d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1"/>
                                         </svg>
-                                        Sign In
+                                        Iniciar sesión
                                     </div>
                                 )}
                             </button>
@@ -250,7 +250,7 @@ export default function Login() {
                         }`}>
                             <div className="text-center">
                                 <p className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    Don't have an account?{' '}
+                                    ¿No tiene una cuenta?{' '}
                                     <button
                                         onClick={handleSignUp}
                                         className={`font-semibold transition-colors duration-200 hover:underline ${
@@ -259,11 +259,8 @@ export default function Login() {
                                                 : 'text-blue-600 hover:text-blue-500'
                                         }`}
                                     >
-                                        Create one now
+                                        Cree una ahora
                                     </button>
-                                </p>
-                                <p className={`mt-3 text-xs ${dark ? 'text-gray-500' : 'text-gray-500'}`}>
-                                    Join thousands of users managing their finances securely
                                 </p>
                             </div>
                         </div>
