@@ -1,10 +1,10 @@
 import React from 'react';
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import {Bar, Pie} from 'react-chartjs-2';
+import {Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend} from 'chart.js';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-export default function Charts({ expenses }) {
+export default function Charts({expenses}) {
     // Agrupar por categoría
     const gastosPorCategoria = expenses.reduce((acc, exp) => {
         acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
