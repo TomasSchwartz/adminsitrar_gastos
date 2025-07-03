@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
+import { getBudgets } from '../api'; // Asegúrate de importar esta función
 
 export default function ExpenseForm({ onAdd, editing, onCancel }) {
     const [form, setForm] = useState({
@@ -7,8 +8,12 @@ export default function ExpenseForm({ onAdd, editing, onCancel }) {
         amount: '',
         date: '',
         category: 'Other',
-        notes: ''
+        notes: '',
+        budget: '' // Nuevo campo para budget
     });
+
+    const [budgets, setBudgets] = useState([]); // Estado para almacenar los budgets
+    const [loadingBudgets, setLoadingBudgets] = useState(true);
 
     const { dark } = useContext(ThemeContext);
 
@@ -23,6 +28,23 @@ export default function ExpenseForm({ onAdd, editing, onCancel }) {
         { value: 'Other', label: 'Other', icon: '📝' }
     ];
 
+    // Cargar budgets al montar el componente
+    useEffect(() => {
+        const fetchBudgets = async () => {
+            try {
+                const response = await getBudgets();
+                setBudgets(response.data);
+            } catch (error) {
+                console.error('Error loading budgets:', error);
+                setBudgets([]);
+            } finally {
+                setLoadingBudgets(false);
+            }
+        };
+
+        fetchBudgets();
+    }, []);
+
     useEffect(() => {
         if (editing) {
             setForm({
@@ -30,7 +52,8 @@ export default function ExpenseForm({ onAdd, editing, onCancel }) {
                 amount: editing.amount || '',
                 date: editing.date ? editing.date.split('T')[0] : '',
                 category: editing.category || 'Other',
-                notes: editing.notes || ''
+                notes: editing.notes || '',
+                budget: editing.budget || '' // Incluir budget en la edición
             });
         }
     }, [editing]);
@@ -42,7 +65,24 @@ export default function ExpenseForm({ onAdd, editing, onCancel }) {
     const handleSubmit = async e => {
         e.preventDefault();
         await onAdd(form);
-        setForm({ description: '', amount: '', date: '', category: 'Other', notes: '' });
+        setForm({
+            description: '',
+            amount: '',
+            date: '',
+            category: 'Other',
+            notes: '',
+            budget: ''
+        });
+    };
+
+    // Filtrar budgets por el mes actual si no hay fecha seleccionada
+    const getFilteredBudgets = () => {
+        if (!form.date) return budgets;
+
+        const expenseDate = new Date(form.date);
+        const expenseMonth = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
+
+        return budgets.filter(budget => budget.month === expenseMonth);
     };
 
     return (
@@ -112,27 +152,60 @@ export default function ExpenseForm({ onAdd, editing, onCancel }) {
                 </div>
             </div>
 
-            {/* Category */}
-            <div>
-                <label className={`block text-sm font-semibold mb-2 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Category *
-                </label>
-                <select
-                    name="category"
-                    value={form.category}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                        dark
-                            ? 'bg-slate-800/50 border-slate-600 text-gray-200'
-                            : 'bg-white border-gray-300 text-gray-900'
-                    }`}
-                >
-                    {categories.map(cat => (
-                        <option key={cat.value} value={cat.value}>
-                            {cat.icon} {cat.label}
+            {/* Category and Budget Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label className={`block text-sm font-semibold mb-2 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Category *
+                    </label>
+                    <select
+                        name="category"
+                        value={form.category}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                            dark
+                                ? 'bg-slate-800/50 border-slate-600 text-gray-200'
+                                : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                    >
+                        {categories.map(cat => (
+                            <option key={cat.value} value={cat.value}>
+                                {cat.icon} {cat.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className={`block text-sm font-semibold mb-2 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Budget <span className={`text-sm font-normal ${dark ? 'text-gray-500' : 'text-gray-400'}`}>(optional)</span>
+                    </label>
+                    <select
+                        name="budget"
+                        value={form.budget}
+                        onChange={handleChange}
+                        disabled={loadingBudgets}
+                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                            dark
+                                ? 'bg-slate-800/50 border-slate-600 text-gray-200'
+                                : 'bg-white border-gray-300 text-gray-900'
+                        } ${loadingBudgets ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                        <option value="">
+                            {loadingBudgets ? 'Loading budgets...' : 'No budget'}
                         </option>
-                    ))}
-                </select>
+                        {getFilteredBudgets().map(budget => (
+                            <option key={budget._id} value={budget._id}>
+                                💰 {budget.name} ({budget.month}) - ${budget.maxAmount}
+                            </option>
+                        ))}
+                    </select>
+                    {form.date && getFilteredBudgets().length === 0 && !loadingBudgets && (
+                        <p className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            No budgets available for {new Date(form.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        </p>
+                    )}
+                </div>
             </div>
 
             {/* Notes */}

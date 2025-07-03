@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
-const monthlyBudgetSchema = new mongoose.Schema({
+const budgetSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  month: { type: String, required: true }, // formato: "2025-06"
-  amount: { type: Number, required: true }
+  name: { type: String, required: true },
+  maxAmount: { type: Number, required: true },
+  month: { type: String, required: true },
 }, {
   timestamps: true
 });
 
-monthlyBudgetSchema.index({ user: 1, month: 1 }, { unique: true });
+budgetSchema.index({ user: 1, name: 1, month: 1 }, { unique: true });
 
-module.exports = mongoose.model('MonthlyBudget', monthlyBudgetSchema);
+module.exports = mongoose.model('Budget', budgetSchema);

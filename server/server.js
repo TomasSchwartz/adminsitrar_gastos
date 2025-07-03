@@ -8,6 +8,8 @@ const authRoutes = require('./routes/auth');
 const expenseRoutes = require('./routes/expenses');
 const budgetRoutes = require('./routes/budget');
 
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -24,6 +26,7 @@ app.use('/api/budget', budgetRoutes);
 app.use('/api/income', require('./routes/income'));
 app.use('/api/kpis', require('./routes/kpis'));
 app.use('/api/savings', require('./routes/savings'));
+app.use('/api/budget', require('./routes/budget'));
 
 
 // Conexión a MongoDB
