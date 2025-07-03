@@ -1,30 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const MonthlyBudget = require('../models/MonthlyBudget');
-const authMiddleware = require('../middlewares/auth');
+const budgetController = require('../controllers/budgetController');
+const auth = require('../middlewares/auth'); // asegúrate de tener este middleware para `req.userId`
 
-// GET presupuesto para el mes actual
-router.get('/:month', authMiddleware, async (req, res) => {
-    try {
-        const budget = await MonthlyBudget.findOne({ user: req.userId, month: req.params.month });
-        res.json(budget || { amount: 0 });
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener presupuesto' });
-    }
-});
+router.use(auth); // aplica a todas las rutas
 
-// POST o PUT presupuesto
-router.put('/:month', authMiddleware, async (req, res) => {
-    try {
-        const updated = await MonthlyBudget.findOneAndUpdate(
-            { user: req.userId, month: req.params.month },
-            { amount: req.body.amount },
-            { new: true, upsert: true }
-        );
-        res.json(updated);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al guardar presupuesto' });
-    }
-});
+router.get('/', budgetController.getBudgets);
+router.post('/', budgetController.createBudget);
+router.put('/:id', budgetController.updateBudget);
+router.delete('/:id', budgetController.deleteBudget);
 
 module.exports = router;
