@@ -1,11 +1,11 @@
-# 💸 Expense Tracker PRO — Fullstack App
+# 💸 Expense Tracker
 
 Aplicación web de gestión de gastos personales, desarrollada con MERN Stack: MongoDB, Express, React y Node.js.
 
 ## 🚀 Funcionalidades principales
 
 - Registro e inicio de sesión con JWT
-- Carga, edición y eliminación de gastos
+- Carga, edición y eliminación de gastos e ingresos
 - Filtros por fecha y categoría
 - Gráficos (torta y barras) con estadísticas
 - KPIs financieros: total, promedio, categoría top
